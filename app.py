@@ -52,7 +52,7 @@ API_KEY_FIJA = ""
 if "GOOGLE_API_KEY" in st.secrets:
     API_KEY_FIJA = st.secrets["GOOGLE_API_KEY"]
 
-MODELO_ACTUAL = "gemini-3-flash-preview"  
+MODELO_ACTUAL = "gemini-2.5-flash"  
 
 # ==========================================
 # 🧠 BASE DE DATOS DE CONOCIMIENTO
@@ -381,4 +381,5 @@ if 'res' in st.session_state:
     except: pass
     try: c3.download_button("PowerPoint", crear_pptx(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato']), "Slides.pptx")
     except: pass
+
 
