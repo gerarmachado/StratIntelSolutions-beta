@@ -182,9 +182,15 @@ class PDFReport(FPDF):
         self.cell(0, 10, 'Informe de Inteligencia StratIntel V10', 0, 1, 'C')
         self.ln(5)
     def footer(self):
-        self.set_y(-15)
-        self.set_font('Arial', 'I', 8)
-        self.cell(0, 10, 'CONFIDENCIAL - Generado por IA. Verificar fuentes.', 0, 0, 'C')
+        self.set_y(-25) # Subimos un poco para que quepa el texto
+        self.set_font('Arial', 'I', 7)
+        legal_text = (
+            "AVISO LEGAL: Este informe ha sido generado mediante sistemas de Inteligencia Artificial (IA) "
+            "con fines de análisis preliminar. La información contenida puede no ser exacta o completa. "
+            "El usuario asume toda la responsabilidad por el uso de estos datos para la toma de decisiones. "
+            "CONFIDENCIAL - PROPIEDAD DEL USUARIO."
+        )
+        self.multi_cell(0, 3, legal_text, align='C')
 
 def crear_pdf(texto, tecnica, fuente):
     pdf = PDFReport()
@@ -207,7 +213,21 @@ def crear_word(texto, tecnica, fuente):
     for linea in texto.split('\n'):
         if linea.startswith('#'): doc.add_heading(linea.replace('#', '').strip(), level=2)
         else: doc.add_paragraph(linea)
-    doc.add_paragraph("\nCONFIDENCIAL - Uso exclusivo de inteligencia.", style='Intense Quote')
+    # ... código anterior ...
+    
+    # DISCLAIMER ROBUSTO
+    aviso = doc.add_paragraph()
+    aviso_runner = aviso.add_run(
+        "\n\n------------------------------------------------------------\n"
+        "AVISO DE RESPONSABILIDAD:\n"
+        "Este documento fue generado asistido por Inteligencia Artificial Avanzada. "
+        "El análisis presentado se basa en los datos suministrados y patrones probabilísticos. "
+        "No constituye asesoramiento legal, financiero ni militar vinculante. "
+        "El operador humano debe verificar los hallazgos críticos antes de ejecutar acciones."
+    )
+    aviso_runner.font.size = 9
+    aviso_runner.italic = True
+    
     b = BytesIO(); doc.save(b); b.seek(0)
     return b
 
@@ -233,7 +253,8 @@ if st.sidebar.button("🔒 Salir"):
     del st.session_state["password_correct"]
     st.rerun()
 
-st.title(f"Sistema de Inteligencia Estratégica V10")
+st.title("🛡️ StratIntel | División de Análisis")
+st.markdown("**Sistema de Apoyo a la Decisión (DSS) v10.0**")
 
 # --- TABS CON CARGA MÚLTIPLE ---
 t1, t2, t3, t4, t5 = st.tabs(["📂 Multi-PDF", "📝 Multi-DOCX", "🌐 Web", "📺 YouTube", "✍️ Manual"])
