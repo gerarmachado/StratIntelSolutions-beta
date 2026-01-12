@@ -179,7 +179,7 @@ def limpiar_texto_pdf(texto):
 class PDFReport(FPDF):
     def header(self):
         self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Informe de Inteligencia StratIntel V10', 0, 1, 'C')
+        self.cell(0, 10, 'Informe StratIntel V10', 0, 1, 'C')
         self.ln(5)
     def footer(self):
         self.set_y(-25) # Subimos un poco para que quepa el texto
@@ -188,7 +188,7 @@ class PDFReport(FPDF):
             "AVISO LEGAL: Este informe ha sido generado mediante sistemas de Inteligencia Artificial (IA) "
             "con fines de análisis preliminar. La información contenida puede no ser exacta o completa. "
             "El usuario asume toda la responsabilidad por el uso de estos datos para la toma de decisiones. "
-            "CONFIDENCIAL - PROPIEDAD DEL USUARIO."
+            "RESERVADO - PROPIEDAD DEL USUARIO."
         )
         self.multi_cell(0, 3, legal_text, align='C')
 
@@ -308,7 +308,7 @@ if st.session_state['texto_analisis']:
     with st.expander("Ver Datos Cargados"): st.write(st.session_state['texto_analisis'][:2000] + "...")
 
 # --- EJECUCIÓN ---
-st.header("Generación de Inteligencia")
+st.header("Generación de Informe")
 c1, c2 = st.columns([1, 2])
 
 with c1:
