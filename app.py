@@ -11,12 +11,13 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import yt_dlp
 import os
 import time
+import datetime
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="StratIntel V10 (Heavy Duty)", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="StratIntel V11 (Global)", page_icon="🛡️", layout="wide")
 
 # ==========================================
-# 🔐 SISTEMA DE LOGIN
+# 🔐 SISTEMA DE LOGIN (TUYO)
 # ==========================================
 def check_password():
     """Retorna `True` si el usuario tiene la contraseña correcta."""
@@ -52,7 +53,7 @@ if "GOOGLE_API_KEY" in st.secrets:
 MODELO_ACTUAL = "gemini-3-flash-preview"  
 
 # ==========================================
-# 🧠 BASE DE DATOS DE CONOCIMIENTO (ACTUALIZADA V10)
+# 🧠 BASE DE DATOS DE CONOCIMIENTO
 # ==========================================
 DB_CONOCIMIENTO = {
     "✨ RECOMENDACIÓN AUTOMÁTICA (IA)": {
@@ -213,9 +214,8 @@ def crear_word(texto, tecnica, fuente):
     for linea in texto.split('\n'):
         if linea.startswith('#'): doc.add_heading(linea.replace('#', '').strip(), level=2)
         else: doc.add_paragraph(linea)
-    # ... código anterior ...
     
-    # DISCLAIMER ROBUSTO
+    # DISCLAIMER ROBUSTO (TU VERSIÓN)
     aviso = doc.add_paragraph()
     aviso_runner = aviso.add_run(
         "\n\n------------------------------------------------------------\n"
@@ -232,7 +232,7 @@ def crear_word(texto, tecnica, fuente):
     return b
 
 # --- INTERFAZ ---
-st.sidebar.title("🛡️ StratIntel V10")
+st.sidebar.title("🛡️ StratIntel V11")
 st.sidebar.caption("SaaS Edition | Multi-Target")
 st.sidebar.markdown("---")
 
@@ -245,8 +245,15 @@ else:
         k = st.sidebar.text_input("🔑 API KEY:", type="password")
         if k: st.session_state['api_key'] = k; genai.configure(api_key=k); st.rerun()
 
-tecnica = st.sidebar.selectbox("Marco Metodológico:", list(DB_CONOCIMIENTO.keys()))
-if DB_CONOCIMIENTO[tecnica]["desc"]: st.sidebar.info(DB_CONOCIMIENTO[tecnica]["desc"])
+# --- SELECTOR DE MODO (NUEVO) ---
+modo_operacion = st.sidebar.radio("Modo de Operación:", ["Análisis Específico", "☢️ EJECUCIÓN GLOBAL"])
+
+# Solo mostrar selector de técnica si NO estamos en modo Global
+tecnica = "MODO_GLOBAL"
+if modo_operacion == "Análisis Específico":
+    tecnica = st.sidebar.selectbox("Marco Metodológico:", list(DB_CONOCIMIENTO.keys()))
+    if DB_CONOCIMIENTO[tecnica]["desc"]: st.sidebar.info(DB_CONOCIMIENTO[tecnica]["desc"])
+
 temp = st.sidebar.slider("Creatividad", 0.0, 1.0, 0.4)
 
 if st.sidebar.button("🔒 Salir"):
@@ -254,7 +261,7 @@ if st.sidebar.button("🔒 Salir"):
     st.rerun()
 
 st.title("🛡️ StratIntel | División de Análisis")
-st.markdown("**Sistema de Apoyo a la Decisión (DSS) v10.0**")
+st.markdown("**Sistema de Apoyo a la Decisión (DSS) v11.0**")
 
 # --- TABS CON CARGA MÚLTIPLE ---
 t1, t2, t3, t4, t5 = st.tabs(["📂 Multi-PDF", "📝 Multi-DOCX", "🌐 Web", "📺 YouTube", "✍️ Manual"])
@@ -307,59 +314,119 @@ if st.session_state['texto_analisis']:
     st.info(f"📂 Fuente Activa: **{st.session_state['origen_dato']}**")
     with st.expander("Ver Datos Cargados"): st.write(st.session_state['texto_analisis'][:2000] + "...")
 
-# --- EJECUCIÓN ---
+# --- ÁREA DE EJECUCIÓN (LÓGICA DUAL) ---
 st.header("Generación de Informe")
-c1, c2 = st.columns([1, 2])
 
-with c1:
-    pregs = DB_CONOCIMIENTO.get(tecnica, {}).get("preguntas", [])
-    mode = st.radio("Modo:", ["Personalizado", "AUTO: Responder TODO"] + pregs)
+if not st.session_state['api_key'] or not st.session_state['texto_analisis']:
+    st.warning("⚠️ Carga datos y verifica tu API Key para comenzar.")
+else:
+    # ---------------------------------------------------------
+    # MODO 1: ANÁLISIS ESPECÍFICO (TU CÓDIGO ACTUAL)
+    # ---------------------------------------------------------
+    if modo_operacion == "Análisis Específico":
+        c1, c2 = st.columns([1, 2])
+        with c1:
+            pregs = DB_CONOCIMIENTO.get(tecnica, {}).get("preguntas", [])
+            mode = st.radio("Enfoque:", ["Personalizado", "AUTO: Responder TODO"] + pregs)
+        with c2:
+            pir = st.text_area("Requerimiento (PIR):", value="" if "AUTO" in mode or mode in pregs else "", height=150)
+            
+            if st.button("🚀 EJECUTAR ANÁLISIS PROFUNDO", type="primary", use_container_width=True):
+                try:
+                    genai.configure(api_key=st.session_state['api_key'])
+                    model = genai.GenerativeModel(MODELO_ACTUAL)
+                    ctx = st.session_state['texto_analisis']
+                    
+                    # TU PROMPT DE ESPECIALISTA
+                    instruccion_base = f"""
+                    ACTÚA COMO: Especialista en Derecho y Política Internacional y Analista de Inteligencia Estratégica Senior (Nivel Gubernamental).
+                    TAREA: Generar un informe de inteligencia exhaustivo y detallado.
+                    METODOLOGÍA: {tecnica}
+                    
+                    INSTRUCCIONES DE FORMATO Y PROFUNDIDAD:
+                    1. NO RESUMAS. Tu objetivo es la profundidad y el detalle.
+                    2. Cada punto analizado debe tener al menos 2-3 párrafos de desarrollo.
+                    3. Usa un tono académico, objetivo y formal.
+                    4. Cita textualmente las fuentes proporcionadas cuando sea relevante.
+                    5. Estructura la respuesta con encabezados Markdown claros.
+                    """
 
-with c2:
-    pir = st.text_area("Requerimiento (PIR):", value="" if "AUTO" in mode or mode in pregs else "", height=150)
-    
-    if st.button("🚀 EJECUTAR ANÁLISIS PROFUNDO", type="primary", use_container_width=True):
-        if not st.session_state['api_key'] or not st.session_state['texto_analisis']:
-            st.error("Datos insuficientes")
-        else:
+                    if "AUTO: Responder TODO" in mode:
+                        lista_p = "\n".join([f"- {p}" for p in pregs])
+                        full_prompt = f"{instruccion_base}\n\nResponde DETALLADAMENTE a cada una de estas preguntas:\n{lista_p}\n\nCONTEXTO:\n{ctx}"
+                    elif mode in pregs:
+                        full_prompt = f"{instruccion_base}\n\nPREGUNTA ESPECÍFICA:\n{mode}\n\nCONTEXTO:\n{ctx}"
+                    else:
+                        full_prompt = f"{instruccion_base}\n\nREQUERIMIENTO (PIR):\n{pir}\n\nCONTEXTO:\n{ctx}"
+                    
+                    with st.spinner(f"Analizando a profundidad con {MODELO_ACTUAL}..."):
+                        res = model.generate_content(full_prompt, generation_config=genai.types.GenerationConfig(temperature=temp))
+                        st.session_state['res'] = res.text
+                        st.markdown("### 📡 Informe Generado")
+                        st.write(res.text)
+                except Exception as e: st.error(f"Error: {e}")
+
+    # ---------------------------------------------------------
+    # MODO 2: EJECUCIÓN GLOBAL (NUEVO)
+    # ---------------------------------------------------------
+    else:
+        st.info("ℹ️ Este modo aplicará TODAS las metodologías disponibles en la base de datos al documento cargado. Esto tomará varios minutos.")
+        
+        if st.button("☢️ INICIAR PROTOCOLO GLOBAL (EJECUTAR TODO)", type="primary", use_container_width=True):
             try:
                 genai.configure(api_key=st.session_state['api_key'])
                 model = genai.GenerativeModel(MODELO_ACTUAL)
                 ctx = st.session_state['texto_analisis']
                 
-                # PROMPT V10: INGENIERÍA PARA EXTENSIÓN Y PROFUNDIDAD
-                instruccion_base = f"""
-                ACTÚA COMO: Especialista en Derecho y Política Internacional y Analista de Inteligencia Estratégica Senior (Nivel Gubernamental).
-                TAREA: Generar un informe de inteligencia exhaustivo y detallado.
-                METODOLOGÍA: {tecnica}
+                # INICIALIZAR INFORME MAESTRO
+                informe_maestro = f"# 🛡️ INFORME DE INTELIGENCIA GLOBAL\nFECHA: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}\nFUENTE: {st.session_state['origen_dato']}\n\n"
                 
-                INSTRUCCIONES DE FORMATO Y PROFUNDIDAD:
-                1. NO RESUMAS. Tu objetivo es la profundidad y el detalle.
-                2. Cada punto analizado debe tener al menos 2-3 párrafos de desarrollo.
-                3. Usa un tono académico, objetivo y formal.
-                4. Cita textualmente las fuentes proporcionadas cuando sea relevante.
-                5. Estructura la respuesta con encabezados Markdown claros.
-                """
-
-                if "AUTO: Responder TODO" in mode:
-                    lista_p = "\n".join([f"- {p}" for p in pregs])
-                    full_prompt = f"{instruccion_base}\n\nResponde DETALLADAMENTE a cada una de estas preguntas:\n{lista_p}\n\nCONTEXTO:\n{ctx}"
-                elif mode in pregs:
-                    full_prompt = f"{instruccion_base}\n\nPREGUNTA ESPECÍFICA:\n{mode}\n\nCONTEXTO:\n{ctx}"
-                else:
-                    full_prompt = f"{instruccion_base}\n\nREQUERIMIENTO (PIR):\n{pir}\n\nCONTEXTO:\n{ctx}"
+                # BARRA DE PROGRESO
+                progreso = st.progress(0)
+                status_text = st.empty()
+                total_steps = len(DB_CONOCIMIENTO)
                 
-                with st.spinner(f"Analizando a profundidad con {MODELO_ACTUAL}..."):
-                    res = model.generate_content(full_prompt, generation_config=genai.types.GenerationConfig(temperature=temp))
-                    st.session_state['res'] = res.text
-                    st.markdown("### 📡 Informe Generado")
-                    st.write(res.text)
-            except Exception as e: st.error(f"Error: {e}")
+                # BUCLE DE EJECUCIÓN
+                for i, (nombre_tec, datos) in enumerate(DB_CONOCIMIENTO.items()):
+                    # Evitar ejecutar los títulos de sección
+                    if "---" in nombre_tec: 
+                        continue
+                        
+                    status_text.text(f"⏳ Analizando: {nombre_tec}...")
+                    
+                    # PROMPT ESPECIALISTA (ADAPTADO AL BUCLE)
+                    prompt_ciclo = f"""
+                    ACTÚA COMO: Especialista en Derecho y Política Internacional y Analista de Inteligencia Estratégica Senior.
+                    TAREA: Realizar un análisis profundo usando la metodología: {nombre_tec}.
+                    
+                    INSTRUCCIONES:
+                    1. Responde a las preguntas clave de esta metodología de forma exhaustiva.
+                    2. Mantén la profundidad académica (2-3 párrafos por punto).
+                    3. Contexto a analizar: {ctx}
+                    """
+                    
+                    # LLAMADA API
+                    respuesta = model.generate_content(prompt_ciclo, generation_config=genai.types.GenerationConfig(temperature=temp))
+                    
+                    # AGREGAR AL INFORME
+                    informe_maestro += f"\n\n## 📌 {nombre_tec}\n{respuesta.text}\n\n---\n"
+                    
+                    # ACTUALIZAR PROGRESO
+                    progreso.progress((i + 1) / total_steps)
+                    
+                    # 🛑 FRENO DE SEGURIDAD (3 Segundos)
+                    time.sleep(3)
+                
+                st.session_state['res'] = informe_maestro
+                status_text.success("✅ Protocolo Global Finalizado Exitosamente.")
+                st.markdown(informe_maestro)
 
+            except Exception as e: st.error(f"Error crítico en protocolo global: {e}")
+
+# DESCARGAS (COMÚN PARA AMBOS MODOS)
 if 'res' in st.session_state:
     st.markdown("---")
     cd1, cd2 = st.columns(2)
-    cd1.download_button("Descargar WORD", crear_word(st.session_state['res'], tecnica, st.session_state['origen_dato']), "Informe_V10.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    try: cd2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], tecnica, st.session_state['origen_dato'])), "Informe_V10.pdf", "application/pdf")
+    cd1.download_button("Descargar WORD", crear_word(st.session_state['res'], "Informe Integral", st.session_state['origen_dato']), "Informe_V11.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    try: cd2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], "Informe Integral", st.session_state['origen_dato'])), "Informe_V11.pdf", "application/pdf")
     except Exception as e: cd2.error(f"Error PDF: {e}")
-
