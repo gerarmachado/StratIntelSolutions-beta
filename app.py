@@ -15,7 +15,7 @@ import datetime
 from langchain_community.tools import DuckDuckGoSearchRun
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="StratIntel V1 (Stable)", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="StratIntel V16.2 (Master)", page_icon="♟️", layout="wide")
 
 # ==========================================
 # 🔐 SISTEMA DE LOGIN
@@ -32,7 +32,7 @@ def check_password():
     if st.session_state.get("password_correct", False):
         return True
 
-    st.markdown("## 🛡️ StratIntel: Acceso Restringido")
+    st.markdown("## ♟️ StratIntel: Acceso Restringido")
     st.text_input("Usuario", key="username")
     st.text_input("Contraseña", type="password", on_change=password_entered, key="password")
     
@@ -44,17 +44,16 @@ if not check_password():
     st.stop()
 
 # ==========================================
-# ⚙️ CONFIGURACIÓN Y MODELO (ESTABLE)
+# ⚙️ CONFIGURACIÓN Y MODELO
 # ==========================================
 API_KEY_FIJA = "" 
 if "GOOGLE_API_KEY" in st.secrets:
     API_KEY_FIJA = st.secrets["GOOGLE_API_KEY"]
 
-# MODELO ESTABLE PARA EVITAR ERROR 429
 MODELO_ACTUAL = "gemini-2.5-flash"  
 
 # ==========================================
-# 🧠 BASE DE DATOS MAESTRA (V15 - ENFOQUES INTEGRALES MULTIDIMENSIONALES)
+# 🧠 BASE DE DATOS MAESTRA (V15 - ENFOQUES INTEGRALES)
 # ==========================================
 DB_CONOCIMIENTO = {
     "✨ RECOMENDACIÓN AUTOMÁTICA": {
@@ -79,18 +78,19 @@ DB_CONOCIMIENTO = {
     "Kenneth Waltz (Neorrealismo / Imágenes)": {
         "desc": "Las Tres Imágenes (Hombre, Estado, Sistema) y la Estructura Anárquica.",
         "preguntas": [
-            "Tercera Imagen (Sistémica): ¿Cómo la anarquía internacional y la distribución de poder (polaridad) obligan al actor a actuar así?, ¿Cómo afecta la distribución de capacidades (unipolar/multipolar)?",
+            "Tercera Imagen (Sistémica): ¿Cómo la anarquía internacional y la distribución de poder (polaridad) obligan al actor a actuar así?", 
+            "Polaridad: ¿Cómo afecta la distribución de capacidades (unipolar/multipolar)?",
             "Segunda Imagen (Estatal): ¿Es el régimen político interno irrelevante para la política exterior en este caso?",
             "Equilibrio de Poder: ¿Está el actor haciendo 'Balancing' (aliarse contra el fuerte) o 'Bandwagoning' (unirse al fuerte)?",
-            "Principio de Autoayuda: ¿Qué medidas unilaterales está tomando el actor para garantizar su propia seguridad?, ¿El comportamiento es defensivo (seguridad) u ofensivo (poder)?"
+            "Principio de Autoayuda: ¿Qué medidas unilaterales está tomando el actor para garantizar su propia seguridad? ¿El comportamiento es defensivo (seguridad) u ofensivo (poder)?"
         ]
     },
     "John Mearsheimer (Realismo Ofensivo)": {
         "desc": "La Tragedia de las Grandes Potencias y la Hegemonía.",
         "preguntas": [
-            "Búsqueda de Hegemonía: ¿Está el actor intentando convertirse en el Hegemon regional para asegurar su supervivencia?, ¿Está aprovechando oportunidades para alterar el status quo?",
-            "Poder Detenedor del Agua: ¿Cómo la geografía (océanos, montañas) limita la proyección de poder del actor?, Evalúa el potencial de poder latente (economía/población) vs poder militar actual.",
-            "Maximizador de Poder: ¿Está el actor aprovechando cada oportunidad para debilitar a sus rivales potenciales?, ¿Cómo está maximizando su poder relativo a expensas de sus vecinos?",
+            "Búsqueda de Hegemonía: ¿Está el actor intentando convertirse en el Hegemon regional para asegurar su supervivencia? ¿Está aprovechando oportunidades para alterar el status quo?",
+            "Poder Detenedor del Agua: ¿Cómo la geografía (océanos, montañas) limita la proyección de poder del actor? Evalúa el potencial de poder latente (economía/población) vs poder militar actual.",
+            "Maximizador de Poder: ¿Está el actor aprovechando cada oportunidad para debilitar a sus rivales potenciales? ¿Cómo está maximizando su poder relativo a expensas de sus vecinos?",
             "Estrategia de 'Buck-Passing': ¿Está intentando que otro estado asuma el costo de contener al agresor?"
         ]
     },
@@ -99,7 +99,7 @@ DB_CONOCIMIENTO = {
         "preguntas": [
             "Teoría del Equilibrio de Amenazas: Evalúa la amenaza combinando: 1) Poder Agregado, 2) Geografía, 3) Capacidad Ofensiva, 4) Intenciones Agresivas. ¿Quién es percibido como el más amenazante (no solo el más fuerte)?",
             "Dilema de Seguridad: ¿Las medidas defensivas de un actor están siendo malinterpretadas como ofensivas por el otro?",
-            "Espiral de Conflicto: ¿Cómo una acción defensiva ha provocado una reacción hostil involuntaria?, ¿Las intenciones agresivas son reales o producto de la incertidumbre sistémica?."
+            "Espiral de Conflicto: ¿Cómo una acción defensiva ha provocado una reacción hostil involuntaria? ¿Las intenciones agresivas son reales o producto de la incertidumbre sistémica?"
         ]
     },
     "Realismo Neoclásico (Schweller)": {
@@ -138,8 +138,8 @@ DB_CONOCIMIENTO = {
         "desc": "Teoría de Juegos, Evolución de la Cooperación y Normas.",
         "preguntas": [
             "El Dilema del Prisionero: ¿Existen incentivos estructurales que hacen racional la traición individual?",
-            "Estrategia Tit-for-Tat: ¿Está el actor respondiendo con reciprocidad estricta (cooperar si cooperas, castigar si traicionas)?, ¿Está el actor respondiendo proporcionalmente (Tit-for-Tat) o escalando?",
-            "La Sombra del Futuro: ¿Es la interacción lo suficientemente duradera para fomentar la cooperación?, ¿Tienen los actores expectativas de interactuar nuevamente? (Clave para cooperar)",
+            "Estrategia Tit-for-Tat: ¿Está el actor respondiendo con reciprocidad estricta? ¿Está respondiendo proporcionalmente o escalando?",
+            "La Sombra del Futuro: ¿Es la interacción lo suficientemente duradera para fomentar la cooperación? ¿Tienen expectativas de interactuar nuevamente?",
             "Meta-Normas: ¿Existe presión social o sanciones de terceros para castigar a los desertores?",
             "Detección de Trampas: ¿Qué mecanismos de verificación existen para asegurar el cumplimiento?",
             "Estructura de Pagos: ¿Cómo alterar los incentivos para que cooperar sea más rentable que traicionar?"
@@ -157,10 +157,10 @@ DB_CONOCIMIENTO = {
     "Keohane & Nye (Neoliberalismo Institucional)": {
         "desc": "Interdependencia Compleja y Regímenes Internacionales.",
         "preguntas": [
-            "Canales Múltiples: ¿Existen conexiones entre sociedades (no solo entre gobiernos) que afecten el conflicto?, ¿Qué instituciones internacionales facilitan la cooperación o reducen costos de transacción?",
+            "Canales Múltiples: ¿Existen conexiones entre sociedades (no solo entre gobiernos)? ¿Qué instituciones facilitan la cooperación?",
             "Ausencia de Jerarquía: ¿Están los temas militares subordinados a temas económicos o ecológicos en esta crisis?",
             "Interdependencia Compleja: ¿Los vínculos económicos hacen la guerra irracional?",
-            "Regímenes Internacionales: ¿Qué normas o reglas implícitas están gobernando las expectativas de los actores?, ¿Existe un régimen internacional que regule este conflicto?."
+            "Regímenes Internacionales: ¿Qué normas o reglas implícitas gobiernan las expectativas? ¿Existe un régimen internacional que regule este conflicto?"
         ]
     },
     "Alexander Wendt (Constructivismo Social)": {
@@ -169,13 +169,14 @@ DB_CONOCIMIENTO = {
             "Culturas de la Anarquía: ¿El sistema es Hobbesiano (Enemigos), Lockeano (Rivales) o Kantiano (Amigos)?",
             "Estructura Ideacional: ¿Cómo las identidades históricas y normas sociales definen el interés nacional?",
             "Ciclo de Refuerzo: ¿Cómo las interacciones pasadas han construido la percepción actual de 'amenaza'?",
-            "¿Qué normas internacionales están constriñendo o habilitando la acción?."
+            "Normas Internacionales: ¿Qué normas están constriñendo o habilitando la acción?"
         ]
     },
     "Samuel Huntington (Choque de Civilizaciones)": {
         "desc": "Conflictos de identidad cultural y religiosa.",
         "preguntas": [
-            "Líneas de Falla: ¿Ocurre el conflicto en la frontera entre dos civilizaciones distintas?, ¿Es el núcleo del conflicto la identidad religiosa o cultural?",
+            "Líneas de Falla: ¿Ocurre el conflicto en la frontera entre dos civilizaciones distintas?",
+            "Núcleo Identitario: ¿Es el núcleo del conflicto la identidad religiosa o cultural?",
             "Síndrome del País Pariente (Kin-Country): ¿Están otros estados interviniendo por lealtad cultural/religiosa?",
             "Occidente vs El Resto: ¿Es una reacción contra la imposición de valores occidentales?"
         ]
@@ -226,7 +227,8 @@ DB_CONOCIMIENTO = {
         "preguntas": [
             "Matriz Poder vs Interés: Clasifica a todos los actores relevantes.",
             "Identificación de Vetadores: ¿Quién tiene la capacidad de bloquear cualquier acuerdo?",
-            "Aliados y Spoilers: ¿Quién gana con la resolución y quién gana con la continuación del conflicto?"]
+            "Aliados y Spoilers: ¿Quién gana con la resolución y quién gana con la continuación del conflicto?"
+        ]
     },
     "Análisis Geopolítico (PMESII-PT)": {
         "desc": "Variables del entorno operativo: Político, Militar, Económico, Social, Info, Infraestructura, Físico, Tiempo.",
@@ -271,7 +273,8 @@ DB_CONOCIMIENTO = {
             "Define el problema visible.",
             "Pregunta 1: ¿Por qué ocurre esto?",
             "Pregunta 2: ¿Por qué ocurre lo anterior? (Repetir hasta 5 veces)",
-            "Identifica la falla sistémica original, no el síntoma."]
+            "Identifica la falla sistémica original, no el síntoma."
+        ]
     },
     "Escenarios Prospectivos": {
         "desc": "Cono de Plausibilidad.",
@@ -347,7 +350,7 @@ def procesar_youtube(url, api_key):
                 fname = f"{info['id']}.mp3"
             genai.configure(api_key=api_key)
             myfile = genai.upload_file(fname)
-            while myfile.state.name == "PROCESSING": time.sleep(10); myfile = genai.get_file(myfile.name)
+            while myfile.state.name == "PROCESSING": time.sleep(2); myfile = genai.get_file(myfile.name)
             model = genai.GenerativeModel(MODELO_ACTUAL)
             res = model.generate_content([myfile, "Transcribe el audio."])
             if os.path.exists(fname): os.remove(fname)
@@ -365,7 +368,7 @@ def limpiar_texto(t):
 class PDFReport(FPDF):
     def header(self):
         self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'StratIntel Report', 0, 1, 'C')
+        self.cell(0, 10, 'StratIntel Report V16', 0, 1, 'C')
         self.ln(5)
     def footer(self):
         self.set_y(-15)
@@ -384,7 +387,7 @@ def crear_pdf(texto, tecnicas, fuente):
 
 def crear_word(texto, tecnicas, fuente):
     doc = Document()
-    doc.add_heading('StratIntel Intelligence Report', 0)
+    doc.add_heading('StratIntel Intelligence Report V16', 0)
     doc.add_paragraph(f"Fuente: {fuente}").bold = True
     doc.add_paragraph(f"Técnicas: {tecnicas}").bold = True
     for l in texto.split('\n'):
@@ -397,8 +400,8 @@ def crear_word(texto, tecnicas, fuente):
     return b
 
 # --- INTERFAZ ---
-st.sidebar.title("🛡️ StratIntel V1")
-st.sidebar.caption("Stable Edition | Multi-Select")
+st.sidebar.title("♟️ StratIntel V16")
+st.sidebar.caption("Master Edition | Ops Mode")
 st.sidebar.markdown("---")
 
 if API_KEY_FIJA:
@@ -421,8 +424,8 @@ tecnicas_seleccionadas = st.sidebar.multiselect(
 temp = st.sidebar.slider("Creatividad", 0.0, 1.0, 0.4)
 if st.sidebar.button("🔒 Salir"): del st.session_state["password_correct"]; st.rerun()
 
-st.title("🛡️ StratIntel | División de Análisis")
-st.markdown("**Sistema de Apoyo a la Decisión (DSS) v1**")
+st.title("♟️ StratIntel | División de Análisis")
+st.markdown("**Sistema de Apoyo a la Decisión (DSS) v16.2**")
 
 # CARGA
 t1, t2, t3, t4, t5 = st.tabs(["📂 PDFs", "📝 DOCXs", "🌐 Web", "📺 YouTube", "✍️ Manual"])
@@ -462,11 +465,25 @@ else:
     with c1:
         if not tecnicas_seleccionadas: st.info("👈 Selecciona técnicas.")
         
+        # --- SELECTOR DE PROFUNDIDAD CON MODO OPERACIONAL ---
         profundidad = st.radio(
             "Nivel de Profundidad:", 
-            ["🔍 Estratégico (Resumen General)", "🎯 Táctico (Responder TODAS las preguntas)"],
-            help="Estratégico: Análisis libre. Táctico: Responde una a una las preguntas del marco."
+            ["🔍 Estratégico (Resumen)", "🎯 Táctico (Todas las preguntas)", "⚙️ Operacional (Selección Específica)"],
+            help="Estratégico: Visión general. Táctico: Todas las preguntas del marco. Operacional: Selecciona preguntas manualmente."
         )
+        
+        # --- LÓGICA DE SELECCIÓN MANUAL (OPERACIONAL) ---
+        preguntas_manuales = {}
+        if "Operacional" in profundidad and tecnicas_seleccionadas:
+            st.info("👇 Selecciona los vectores de análisis:")
+            for tec in tecnicas_seleccionadas:
+                # Obtenemos las preguntas de TU base de datos exacta
+                qs = DB_CONOCIMIENTO.get(tec, {}).get("preguntas", [])
+                if qs:
+                    sel = st.multiselect(f"Preguntas para {tec}:", qs)
+                    preguntas_manuales[tec] = sel
+                else:
+                    st.warning(f"{tec} no tiene preguntas predefinidas.")
         
         usar_internet = st.checkbox("🌐 Búsqueda Web")
         pir = st.text_area("PIR (Opcional):", height=100)
@@ -488,25 +505,38 @@ else:
                         s.update(label="✅ Hecho", state="complete", expanded=False)
                 
                 # BUCLE DE ANÁLISIS
-                informe_final = f"# INFORME V14\nFECHA: {datetime.datetime.now().strftime('%d/%m/%Y')}\nFUENTE: {st.session_state['origen_dato']}\n\n"
+                informe_final = f"# INFORME V16.2\nFECHA: {datetime.datetime.now().strftime('%d/%m/%Y')}\nFUENTE: {st.session_state['origen_dato']}\n\n"
                 progreso = st.progress(0)
                 
                 for i, tec in enumerate(tecnicas_seleccionadas):
                     st.caption(f"Analizando: {tec}...")
                     
-                    # LÓGICA DE PREGUNTAS
-                    preguntas_base = DB_CONOCIMIENTO.get(tec, {}).get("preguntas", [])
+                    # LÓGICA DE INYECCIÓN DE PREGUNTAS
                     instruccion_preguntas = ""
-                    if "Táctico" in profundidad and preguntas_base:
-                        lista_formateada = "\n".join([f"- {p}" for p in preguntas_base])
-                        instruccion_preguntas = f"\n\nOBLIGATORIO: Responde DETALLADAMENTE a:\n{lista_formateada}"
-                    else:
-                        instruccion_preguntas = "\n\nINSTRUCCIÓN: Análisis general profundo."
+                    
+                    if "Táctico" in profundidad:
+                        qs = DB_CONOCIMIENTO.get(tec, {}).get("preguntas", [])
+                        if qs:
+                            lista = "\n".join([f"- {p}" for p in qs])
+                            instruccion_preguntas = f"\n\nOBLIGATORIO: Responde DETALLADAMENTE a TODAS estas preguntas del marco teórico:\n{lista}"
+                        else:
+                            instruccion_preguntas = "\n\nINSTRUCCIÓN: Realiza un análisis táctico detallado."
+
+                    elif "Operacional" in profundidad:
+                        qs_selec = preguntas_manuales.get(tec, [])
+                        if qs_selec:
+                            lista = "\n".join([f"- {p}" for p in qs_selec])
+                            instruccion_preguntas = f"\n\nOBLIGATORIO: Centra el análisis EXCLUSIVAMENTE en responder estas preguntas seleccionadas:\n{lista}"
+                        else:
+                            instruccion_preguntas = "\n\n(NOTA: El usuario no seleccionó preguntas específicas. Realiza un análisis general de la técnica)."
+
+                    else: # Estratégico
+                        instruccion_preguntas = "\n\nINSTRUCCIÓN: Realiza un análisis estratégico general, fluido y ejecutivo (Resumen Global)."
 
                     prompt = f"""
-                    ACTÚA COMO: Analista de Inteligencia Senior.
+                    ACTÚA COMO: Analista de Inteligencia Senior y Experto en Relaciones Internacionales.
                     METODOLOGÍA: {tec}
-                    PIR: {pir}
+                    PIR (Requerimiento de Inteligencia): {pir}
                     
                     {instruccion_preguntas}
                     
@@ -514,10 +544,10 @@ else:
                     {ctx}
                     {contexto_web}
                     
-                    FORMATO: Académico, riguroso, citar fuentes.
+                    FORMATO: Académico, riguroso, citar fuentes del texto.
                     """
                     
-                    # RETRY LOGIC (Anti-429)
+                    # RETRY LOGIC
                     intentos = 0
                     exito = False
                     while intentos < 3 and not exito:
@@ -535,7 +565,7 @@ else:
                                 break
 
                     progreso.progress((i + 1) / len(tecnicas_seleccionadas))
-                    time.sleep(5) # Pausa de cortesía
+                    time.sleep(5) 
                 
                 st.session_state['res'] = informe_final
                 st.session_state['tecnicas_usadas'] = ", ".join(tecnicas_seleccionadas)
@@ -550,4 +580,3 @@ if 'res' in st.session_state:
     c1.download_button("Descargar Word", crear_word(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato']), "Reporte.docx")
     try: c2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato'])), "Reporte.pdf")
     except: pass
-
