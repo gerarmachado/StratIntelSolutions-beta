@@ -15,7 +15,7 @@ import datetime
 from langchain_community.tools import DuckDuckGoSearchRun
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="StratIntel V16.2 (Master)", page_icon="♟️", layout="wide")
+st.set_page_config(page_title="StratIntel (Master)", page_icon="♟️", layout="wide")
 
 # ==========================================
 # 🔐 SISTEMA DE LOGIN
@@ -580,3 +580,4 @@ if 'res' in st.session_state:
     c1.download_button("Descargar Word", crear_word(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato']), "Reporte.docx")
     try: c2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato'])), "Reporte.pdf")
     except: pass
+
