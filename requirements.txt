@@ -3,5 +3,6 @@ google-generativeai
 pypdf
 python-docx
 fpdf
+langchain-google-genai
 
 
