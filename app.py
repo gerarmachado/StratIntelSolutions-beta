@@ -421,7 +421,7 @@ def crear_word(texto, tecnicas, fuente):
     return b
 
 # --- INTERFAZ ---
-st.sidebar.title("♟️ StratIntel")
+st.sidebar.title("♟️ StratIntel Solutions")
 st.sidebar.caption("Master Edition | Ops Mode")
 st.sidebar.markdown("---")
 
@@ -594,6 +594,7 @@ if 'res' in st.session_state:
     c1.download_button("Descargar Word", crear_word(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato']), "Reporte.docx")
     try: c2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato'])), "Reporte.pdf")
     except: pass
+
 
 
 
