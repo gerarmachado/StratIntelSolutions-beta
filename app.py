@@ -10,7 +10,7 @@ import time
 import datetime
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="StratIntel Beta", page_icon="♟️", layout="wide")
+st.set_page_config(page_title="StratIntel Solutions (Beta)", page_icon="♟️", layout="wide")
 
 # ==========================================
 # 🔐 SISTEMA DE LOGIN
@@ -27,7 +27,7 @@ def check_password():
     if st.session_state.get("password_correct", False):
         return True
 
-    st.markdown("## ♟️ StratIntel: Acceso Restringido")
+    st.markdown("## ♟️ StratIntel Solutions: Acceso Restringido")
     st.text_input("Usuario", key="username")
     st.text_input("Contraseña", type="password", on_change=password_entered, key="password")
     
@@ -327,7 +327,7 @@ DB_CONOCIMIENTO = {
 # 📘 TEXTO DEL MANUAL (CONTENIDO ESTÁTICO)
 # ==========================================
 MANUAL_USUARIO = """
-# 📘 MANUAL DE OPERACIONES | SISTEMA STRATINTEL
+# 📘 MANUAL DE OPERACIONES | SISTEMA STRATINTEL SOLUTIONS (BETA)
 
 ## 1. INTRODUCCIÓN
 **StratIntel** es un Sistema de Soporte a la Decisión (DSS) diseñado para analistas de inteligencia.
@@ -445,7 +445,7 @@ tecnicas_seleccionadas = st.sidebar.multiselect(
 temp = st.sidebar.slider("Creatividad", 0.0, 1.0, 0.4)
 if st.sidebar.button("🔒 Salir"): del st.session_state["password_correct"]; st.rerun()
 
-st.title("♟️ StratIntel | División de Análisis")
+st.title("♟️ StratIntel Solutions | División de Análisis")
 st.markdown("**Sistema de Inteligencia Estratégica (DSS)**")
 
 # CARGA
@@ -594,6 +594,7 @@ if 'res' in st.session_state:
     c1.download_button("Descargar Word", crear_word(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato']), "Reporte.docx")
     try: c2.download_button("Descargar PDF", bytes(crear_pdf(st.session_state['res'], st.session_state['tecnicas_usadas'], st.session_state['origen_dato'])), "Reporte.pdf")
     except: pass
+
 
 
 
